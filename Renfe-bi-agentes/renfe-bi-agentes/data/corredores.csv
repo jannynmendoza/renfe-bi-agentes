@@ -1,0 +1,6 @@
+corredor_id,nombre,operadores,peso_canones_en_coste_pct,resultado_billetes_vs_coste_2025,cuota_tren_vs_avion_pct,fuente_id
+BCN,Madrid-Barcelona,"Renfe (AVE/Avlo), Iryo, Ouigo",46,"ingresos superan costes en 6% (único corredor positivo)",83.1,CNMC_ANUAL25
+VLC,Madrid-Valencia,"Renfe (AVE/Avlo), Iryo, Ouigo",30,pérdidas,,CNMC_ANUAL25
+ALI,Madrid-Alicante,"Renfe (AVE/Avlo), Iryo (solo fines de semana fuera de verano), Ouigo",30,pérdidas,,CNMC_ANUAL25
+SEV,Madrid-Sevilla,"Renfe (AVE/Avlo), Iryo, Ouigo (desde enero 2025)",38,pérdidas,,CNMC_ANUAL25
+MAL,Madrid-Málaga/Granada,"Renfe (AVE/Avlo), Iryo, Ouigo (desde enero 2025)",38,pérdidas,,CNMC_ANUAL25

@@ -1,0 +1,149 @@
+[
+  {
+    "prueba": "skill analisis-corredor",
+    "ok": true,
+    "detalle": ".claude/skills/analisis-corredor/SKILL.md"
+  },
+  {
+    "prueba": "skill escenarios-precio",
+    "ok": true,
+    "detalle": ".claude/skills/escenarios-precio/SKILL.md"
+  },
+  {
+    "prueba": "skill informe-decision",
+    "ok": true,
+    "detalle": ".claude/skills/informe-decision/SKILL.md"
+  },
+  {
+    "prueba": "skill verificacion-datos",
+    "ok": true,
+    "detalle": ".claude/skills/verificacion-datos/SKILL.md"
+  },
+  {
+    "prueba": "subagente analista-mercado",
+    "ok": true,
+    "detalle": ".claude/agents/analista-mercado.md"
+  },
+  {
+    "prueba": "subagente estratega-pricing",
+    "ok": true,
+    "detalle": ".claude/agents/estratega-pricing.md"
+  },
+  {
+    "prueba": "subagente auditor-datos",
+    "ok": true,
+    "detalle": ".claude/agents/auditor-datos.md"
+  },
+  {
+    "prueba": "comando /decision-semanal",
+    "ok": true,
+    "detalle": ".claude/commands/decision-semanal.md"
+  },
+  {
+    "prueba": ".mcp.json registra renfe-bi",
+    "ok": true,
+    "detalle": ".mcp.json"
+  },
+  {
+    "prueba": "handshake MCP (stdio)",
+    "ok": true,
+    "detalle": "servidor=renfe-bi en 0.68s"
+  },
+  {
+    "prueba": "list_tools",
+    "ok": true,
+    "detalle": "14 herramientas"
+  },
+  {
+    "prueba": "list_prompts",
+    "ok": true,
+    "detalle": "brief_semanal"
+  },
+  {
+    "prueba": "tool estado_conexiones",
+    "ok": true,
+    "detalle": "40 ms"
+  },
+  {
+    "prueba": "tool listar_corredores",
+    "ok": true,
+    "detalle": "3 ms"
+  },
+  {
+    "prueba": "tool comparar_corredores",
+    "ok": true,
+    "detalle": "3 ms"
+  },
+  {
+    "prueba": "tool kpis_corredor",
+    "ok": true,
+    "detalle": "2 ms"
+  },
+  {
+    "prueba": "tool serie_viajeros",
+    "ok": true,
+    "detalle": "2 ms"
+  },
+  {
+    "prueba": "tool serie_precios",
+    "ok": true,
+    "detalle": "2 ms"
+  },
+  {
+    "prueba": "tool cuotas_mercado",
+    "ok": true,
+    "detalle": "2 ms"
+  },
+  {
+    "prueba": "tool elasticidad_precio",
+    "ok": true,
+    "detalle": "2 ms"
+  },
+  {
+    "prueba": "tool simular_escenario_precio",
+    "ok": true,
+    "detalle": "2 ms"
+  },
+  {
+    "prueba": "tool recomendar_accion",
+    "ok": true,
+    "detalle": "2 ms"
+  },
+  {
+    "prueba": "tool eventos",
+    "ok": true,
+    "detalle": "2 ms"
+  },
+  {
+    "prueba": "tool datos_competidores",
+    "ok": true,
+    "detalle": "2 ms"
+  },
+  {
+    "prueba": "tool demanda_mensual",
+    "ok": true,
+    "detalle": "2 ms"
+  },
+  {
+    "prueba": "tool fuentes",
+    "ok": true,
+    "detalle": "2 ms"
+  },
+  {
+    "prueba": "manejo de errores (corredor XXX)",
+    "ok": true,
+    "detalle": "devuelve isError=true"
+  },
+  {
+    "prueba": "API INE vía MCP (ping)",
+    "ok": false,
+    "detalle": "{\"ok\": false, \"error\": \"No se pudo leer https://servicios.ine.es/wstempus/js/ES/DATOS_TABLA/49359?nult=1: <urlopen error Tunnel connection failed: 403 Forbidden",
+    "opcional": true
+  },
+  {
+    "prueba": "demanda_mensual en vivo (INE 49359)",
+    "ok": false,
+    "detalle": "No se pudo leer https://servicios.ine.es/wstempus/js/ES/DATOS_TABLA/49359?nult=12: <urlopen error Tunnel connection failed: 403 Forbidden>",
+    "opcional": true
+  }
+]

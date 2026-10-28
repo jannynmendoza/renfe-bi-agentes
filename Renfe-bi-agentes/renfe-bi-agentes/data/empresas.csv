@@ -1,0 +1,21 @@
+empresa,anio,indicador,valor,unidad,fuente_id
+Renfe,2025,beneficio_neto_consolidado,60.2,M EUR,RENFE_RES25
+Renfe,2024,beneficio_neto_consolidado,-2.9,M EUR,RENFE_RES25
+Renfe,2025,ingresos_billetes_total,2000,M EUR,RENFE_RES25
+Renfe,2025,ingresos_billetes_AV_y_larga_distancia,1469,M EUR,RENFE_RES25
+Renfe,2025,var_ingresos_AV_y_larga_distancia,7.5,%,RENFE_RES25
+Renfe,2025,ingresos_billetes_OSP,532,M EUR,RENFE_RES25
+Renfe,2025,viajeros_totales,531.4,M,RENFE_RES25
+Renfe,2025,viajes_AV_y_larga_distancia,37,M,OUIGO_RES25
+Renfe,2025,liquidez,1059.5,M EUR,RENFE_RES25
+Renfe,2025,puntualidad_media_distancia,59.4,%,MD_PUNT
+Renfe,2026,larga_distancia_trenes_con_retraso_ene_may,28.8,%,MD_PUNT
+Renfe,2026,larga_distancia_retraso_mas_30min_ene_may,11.7,%,MD_PUNT
+Renfe,2024,cuota_mercado_corredores_liberalizados,72,%,CNMC_BAL24
+Iryo,2025,ingresos_espana,320,M EUR,IRYO_RES25
+Iryo,2025,perdidas,5,M EUR,IRYO_RES25
+Iryo,2024,perdidas,31.6,M EUR,IRYO_RES25
+Ouigo,2024,perdidas_acumuladas_hasta_2024,191,M EUR,OUIGO_RES25
+Ouigo,2025,var_viajeros,44.3,%,OUIGO_RES25
+Sector,2024,puntualidad_rutas_competencia_menos_15min,94,%,CNMC_BAL24
+Sector,2024,resultado_empresas_ferroviarias,-99.5,M EUR,CNMC_BAL24

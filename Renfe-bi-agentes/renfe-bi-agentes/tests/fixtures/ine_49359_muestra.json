@@ -1,0 +1,11 @@
+[
+  {"COD": "TV0001", "Nombre": "Total Nacional. Ferrocarril. Larga distancia. AVE. Viajeros transportados. ", "FK_Unidad": 3, "FK_Escala": 1,
+   "Data": [{"Fecha": 1735686000000, "FK_TipoDato": 1, "FK_Periodo": 1, "Anyo": 2026, "Valor": 2.10, "Secreto": false},
+            {"Fecha": 1738364400000, "FK_TipoDato": 1, "FK_Periodo": 2, "Anyo": 2026, "Valor": 1.95, "Secreto": false}]},
+  {"COD": "TV0002", "Nombre": "Total Nacional. Ferrocarril. Larga distancia. AVE. Variación anual. ", "FK_Unidad": 135, "FK_Escala": 1,
+   "Data": [{"Fecha": 1735686000000, "FK_TipoDato": 1, "FK_Periodo": 1, "Anyo": 2026, "Valor": -20.0, "Secreto": false}]},
+  {"COD": "TV0003", "Nombre": "Total Nacional. Transporte interurbano regular por autobús. Larga distancia. Viajeros transportados. ",
+   "Data": [{"Fecha": 1738364400000, "FK_TipoDato": 1, "FK_Periodo": 2, "Anyo": 2026, "Valor": 1.30, "Secreto": false},
+            {"Fecha": 1738364400000, "FK_TipoDato": 1, "FK_Periodo": 3, "Anyo": 2026, "Valor": null, "Secreto": false}]},
+  {"COD": "TV0004", "Nombre": "Total Nacional. Marítimo. Cabotaje. Viajeros transportados. ", "Data": []}
+]

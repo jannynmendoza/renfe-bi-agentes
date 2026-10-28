@@ -1,0 +1,271 @@
+[
+ {
+  "tool": "estado_conexiones",
+  "args": {
+   "comprobar_ine": false
+  },
+  "ts": "2026-10-28T13:36:18"
+ },
+ {
+  "tool": "kpis_corredor",
+  "args": {
+   "corredor_id": "BCN"
+  },
+  "ts": "2026-10-28T13:36:18"
+ },
+ {
+  "tool": "elasticidad_precio",
+  "args": {
+   "corredor_id": "BCN"
+  },
+  "ts": "2026-10-28T13:36:18"
+ },
+ {
+  "tool": "simular_escenario_precio",
+  "args": {
+   "corredor_id": "BCN",
+   "cambio_precio_pct": 5
+  },
+  "ts": "2026-10-28T13:36:18"
+ },
+ {
+  "tool": "simular_escenario_precio",
+  "args": {
+   "corredor_id": "BCN",
+   "cambio_precio_pct": -5
+  },
+  "ts": "2026-10-28T13:36:18"
+ },
+ {
+  "tool": "recomendar_accion",
+  "args": {
+   "corredor_id": "BCN"
+  },
+  "ts": "2026-10-28T13:36:18"
+ },
+ {
+  "tool": "fuentes",
+  "args": {
+   "fuente_ids": [
+    "CNMC_2T26",
+    "CNMC_3T25",
+    "CNMC_4T25",
+    "CNMC_ANUAL25",
+    "MD_PUNT"
+   ]
+  },
+  "ts": "2026-10-28T13:36:18"
+ },
+ {
+  "tool": "kpis_corredor",
+  "args": {
+   "corredor_id": "VLC"
+  },
+  "ts": "2026-10-28T13:36:18"
+ },
+ {
+  "tool": "elasticidad_precio",
+  "args": {
+   "corredor_id": "VLC"
+  },
+  "ts": "2026-10-28T13:36:18"
+ },
+ {
+  "tool": "simular_escenario_precio",
+  "args": {
+   "corredor_id": "VLC",
+   "cambio_precio_pct": 5
+  },
+  "ts": "2026-10-28T13:36:18"
+ },
+ {
+  "tool": "simular_escenario_precio",
+  "args": {
+   "corredor_id": "VLC",
+   "cambio_precio_pct": -5
+  },
+  "ts": "2026-10-28T13:36:18"
+ },
+ {
+  "tool": "recomendar_accion",
+  "args": {
+   "corredor_id": "VLC"
+  },
+  "ts": "2026-10-28T13:36:18"
+ },
+ {
+  "tool": "fuentes",
+  "args": {
+   "fuente_ids": [
+    "CNMC_1T25",
+    "CNMC_1T26",
+    "CNMC_3T25",
+    "CNMC_4T25",
+    "CNMC_ANUAL25"
+   ]
+  },
+  "ts": "2026-10-28T13:36:18"
+ },
+ {
+  "tool": "kpis_corredor",
+  "args": {
+   "corredor_id": "ALI"
+  },
+  "ts": "2026-10-28T13:36:18"
+ },
+ {
+  "tool": "elasticidad_precio",
+  "args": {
+   "corredor_id": "ALI"
+  },
+  "ts": "2026-10-28T13:36:18"
+ },
+ {
+  "tool": "simular_escenario_precio",
+  "args": {
+   "corredor_id": "ALI",
+   "cambio_precio_pct": 5
+  },
+  "ts": "2026-10-28T13:36:18"
+ },
+ {
+  "tool": "simular_escenario_precio",
+  "args": {
+   "corredor_id": "ALI",
+   "cambio_precio_pct": -5
+  },
+  "ts": "2026-10-28T13:36:18"
+ },
+ {
+  "tool": "recomendar_accion",
+  "args": {
+   "corredor_id": "ALI"
+  },
+  "ts": "2026-10-28T13:36:18"
+ },
+ {
+  "tool": "fuentes",
+  "args": {
+   "fuente_ids": [
+    "CNMC_1T25",
+    "CNMC_1T26",
+    "CNMC_3T25",
+    "CNMC_4T25",
+    "CNMC_ANUAL25"
+   ]
+  },
+  "ts": "2026-10-28T13:36:18"
+ },
+ {
+  "tool": "kpis_corredor",
+  "args": {
+   "corredor_id": "SEV"
+  },
+  "ts": "2026-10-28T13:36:18"
+ },
+ {
+  "tool": "elasticidad_precio",
+  "args": {
+   "corredor_id": "SEV"
+  },
+  "ts": "2026-10-28T13:36:18"
+ },
+ {
+  "tool": "simular_escenario_precio",
+  "args": {
+   "corredor_id": "SEV",
+   "cambio_precio_pct": 5
+  },
+  "ts": "2026-10-28T13:36:18"
+ },
+ {
+  "tool": "simular_escenario_precio",
+  "args": {
+   "corredor_id": "SEV",
+   "cambio_precio_pct": -5
+  },
+  "ts": "2026-10-28T13:36:18"
+ },
+ {
+  "tool": "recomendar_accion",
+  "args": {
+   "corredor_id": "SEV"
+  },
+  "ts": "2026-10-28T13:36:18"
+ },
+ {
+  "tool": "fuentes",
+  "args": {
+   "fuente_ids": [
+    "CNMC_1T25",
+    "CNMC_1T26",
+    "CNMC_4T25",
+    "CNMC_ANUAL25",
+    "INE_AV26"
+   ]
+  },
+  "ts": "2026-10-28T13:36:18"
+ },
+ {
+  "tool": "kpis_corredor",
+  "args": {
+   "corredor_id": "MAL"
+  },
+  "ts": "2026-10-28T13:36:18"
+ },
+ {
+  "tool": "elasticidad_precio",
+  "args": {
+   "corredor_id": "MAL"
+  },
+  "ts": "2026-10-28T13:36:18"
+ },
+ {
+  "tool": "simular_escenario_precio",
+  "args": {
+   "corredor_id": "MAL",
+   "cambio_precio_pct": 5
+  },
+  "ts": "2026-10-28T13:36:18"
+ },
+ {
+  "tool": "simular_escenario_precio",
+  "args": {
+   "corredor_id": "MAL",
+   "cambio_precio_pct": -5
+  },
+  "ts": "2026-10-28T13:36:18"
+ },
+ {
+  "tool": "recomendar_accion",
+  "args": {
+   "corredor_id": "MAL"
+  },
+  "ts": "2026-10-28T13:36:18"
+ },
+ {
+  "tool": "fuentes",
+  "args": {
+   "fuente_ids": [
+    "CNMC_1T25",
+    "CNMC_2T26",
+    "CNMC_4T25",
+    "CNMC_ANUAL25",
+    "INE_AV26"
+   ]
+  },
+  "ts": "2026-10-28T13:36:18"
+ },
+ {
+  "tool": "comparar_corredores",
+  "args": {},
+  "ts": "2026-10-28T13:36:18"
+ },
+ {
+  "tool": "serie_viajeros",
+  "args": {
+   "corredor_id": "TOTAL"
+  },
+  "ts": "2026-10-28T13:36:18"
+ }
+]

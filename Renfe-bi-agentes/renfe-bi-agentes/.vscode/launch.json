@@ -1,0 +1,8 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    { "name": "Demo brief de decisión", "type": "debugpy", "request": "launch", "program": "${workspaceFolder}/scripts/demo_decision.py", "cwd": "${workspaceFolder}", "console": "integratedTerminal" },
+    { "name": "Test de conexiones (live)", "type": "debugpy", "request": "launch", "program": "${workspaceFolder}/scripts/test_connections.py", "args": ["--live"], "cwd": "${workspaceFolder}", "console": "integratedTerminal" },
+    { "name": "Agentes Claude API (BCN)", "type": "debugpy", "request": "launch", "program": "${workspaceFolder}/agents/run_agentes.py", "args": ["--corredor", "BCN"], "cwd": "${workspaceFolder}", "envFile": "${workspaceFolder}/.env", "console": "integratedTerminal" }
+  ]
+}

@@ -1,0 +1,9 @@
+fecha,corredor_id,tipo,evento,fuente_id
+2025-01,SEV;MAL,competencia,"Entrada de Ouigo en el corredor sur (enero 2025): precios -12% en 2025",CNMC_ANUAL25
+2025-06-30,TOTAL,regulacion,"Fin de la gratuidad para viajeros recurrentes de Cercanías y Media Distancia",CNMC_2T26
+2025,BCN,competencia,"Ouigo reduce frecuencias en Madrid-Barcelona; el corredor cae -1,7% en 2025",MD_PUNT
+2026-01-18,SEV;MAL,incidente,"Accidente ferroviario de Adamuz (Córdoba): corte del corredor Madrid-Andalucía durante semanas",INE_AV26
+2026-02,SEV,operacion,"Restablecimiento parcial de Madrid-Sevilla a mediados de febrero",INE_AV26
+2026-04-30,MAL,operacion,"Reapertura Madrid-Málaga/Granada en vía única tras el desprendimiento de Álora",CNMC_2T26
+2026T2,BCN,operacion,"Limitaciones de velocidad en Madrid-Barcelona alargan el tiempo de viaje",CNMC_2T26
+2026-06-03,TOTAL,tecnologia,"Renfe renueva Appia (Expretio) para revenue management y migra a Sqills",EXPRETIO26

@@ -1,0 +1,14 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    { "label": "1. Instalar entorno", "type": "shell",
+      "command": "python -m venv .venv && .venv/bin/pip install -r requirements.txt",
+      "windows": { "command": "python -m venv .venv; .venv\\Scripts\\pip install -r requirements.txt" },
+      "problemMatcher": [] },
+    { "label": "2. Tests (pytest)", "type": "shell", "command": "${command:python.interpreterPath} -m pytest tests -v", "group": "test", "problemMatcher": [] },
+    { "label": "3. Probar todas las conexiones", "type": "shell", "command": "${command:python.interpreterPath} scripts/test_connections.py --live", "problemMatcher": [] },
+    { "label": "4. Demo: brief de decisión", "type": "shell", "command": "${command:python.interpreterPath} scripts/demo_decision.py", "problemMatcher": [] },
+    { "label": "5. Agentes con Claude API", "type": "shell", "command": "${command:python.interpreterPath} agents/run_agentes.py --corredor BCN", "problemMatcher": [] },
+    { "label": "MCP Inspector", "type": "shell", "command": "npx @modelcontextprotocol/inspector ${command:python.interpreterPath} -m mcp_server.server", "problemMatcher": [] }
+  ]
+}

@@ -1,0 +1,6 @@
+periodo,corredor_id,ocupacion_pct,nota,fuente_id
+2025T1,BCN,78,"viajeros.km / plazas.km",CNMC_1T25
+2025T1,VLC,65,"corredores a Levante",CNMC_1T25
+2025T1,ALI,65,"corredores a Levante",CNMC_1T25
+2025T1,SEV,71,,CNMC_1T25
+2025T1,MAL,67,"empeoró al aumentar la oferta",CNMC_1T25

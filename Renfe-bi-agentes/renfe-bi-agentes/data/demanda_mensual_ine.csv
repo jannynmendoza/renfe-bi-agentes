@@ -1,0 +1,6 @@
+periodo,serie,viajeros_millones,var_interanual_pct,nota,fuente_id
+2026-02,Alta velocidad (AVE+Avlo+Iryo+Ouigo),2.16,-32.1,peor mes tras Adamuz,INE_AV26
+2026-03,Alta velocidad (AVE+Avlo+Iryo+Ouigo),,-17.7,,INE_AV26
+2026-04,Alta velocidad (AVE+Avlo+Iryo+Ouigo),,-15.0,,INE_AV26
+2026-01..04,Alta velocidad (AVE+Avlo+Iryo+Ouigo),11.06,-19.6,"13,75 M en ene-abr 2025",INE_AV26
+2026-02,Autobús larga distancia,,15.1,trasvase modal durante el corte,INE_AV26

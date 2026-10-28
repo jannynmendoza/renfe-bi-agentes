@@ -1,0 +1,19 @@
+periodo,corredor_id,operador,cuota_pct,nota,fuente_id
+2025T1,SEV,Renfe,64,,CNMC_1T25
+2025T1,SEV,Iryo,24,,CNMC_1T25
+2025T1,SEV,Ouigo,11,,CNMC_1T25
+2025T1,MAL,Renfe,70,,CNMC_1T25
+2025T1,MAL,Iryo,21,,CNMC_1T25
+2025T1,MAL,Ouigo,9,,CNMC_1T25
+2025T3,VLC,Renfe,50,,CNMC_3T25
+2025T3,BCN,Renfe,62,"aprox.; ~62% en todos salvo VLC",CNMC_3T25
+2025T3,SEV,Renfe,62,"aprox.; ~62% en todos salvo VLC",CNMC_3T25
+2025T3,MAL,Renfe,62,"aprox.; Ouigo +4 pp, Iryo +2 pp vs 2T",CNMC_3T25
+2025T3,ALI,Renfe,62,"aprox.; Iryo +4 pp vs 2T",CNMC_3T25
+2025T4,BCN,Renfe,56,"-6 pp interanual",CNMC_4T25
+2025T4,BCN,Ouigo,19,"+4 pp",CNMC_4T25
+2025T4,BCN,Iryo,24,"+2 pp",CNMC_4T25
+2025T4,VLC,Renfe,51,,CNMC_4T25
+2025T4,SEV,Renfe,60,">60% (-4 pp); Ouigo +6 pp, Iryo -2 pp",CNMC_4T25
+2025T4,ALI,Renfe,60,">60%; Ouigo +6 pp",CNMC_4T25
+2025T4,MAL,Renfe,60,">60%",CNMC_4T25

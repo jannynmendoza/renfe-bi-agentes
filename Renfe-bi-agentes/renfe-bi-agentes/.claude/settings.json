@@ -1,0 +1,24 @@
+{
+  "enableAllProjectMcpServers": true,
+  "permissions": {
+    "allow": [
+      "mcp__renfe-bi__estado_conexiones",
+      "mcp__renfe-bi__listar_corredores",
+      "mcp__renfe-bi__comparar_corredores",
+      "mcp__renfe-bi__kpis_corredor",
+      "mcp__renfe-bi__serie_viajeros",
+      "mcp__renfe-bi__serie_precios",
+      "mcp__renfe-bi__cuotas_mercado",
+      "mcp__renfe-bi__elasticidad_precio",
+      "mcp__renfe-bi__simular_escenario_precio",
+      "mcp__renfe-bi__recomendar_accion",
+      "mcp__renfe-bi__eventos",
+      "mcp__renfe-bi__datos_competidores",
+      "mcp__renfe-bi__demanda_mensual",
+      "mcp__renfe-bi__fuentes",
+      "Write(reports/**)",
+      "Bash(python scripts/*)",
+      "Bash(pytest*)"
+    ]
+  }
+}
