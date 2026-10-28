@@ -78,6 +78,19 @@ python agents/run_agentes.py --corredor SEV --pregunta "¿Bajamos un 10 % para r
 | `demanda_mensual` | Snapshot INE o **en vivo** (tabla INE 49359) con fallback |
 | `fuentes` | Resuelve `fuente_id` → URL |
 
+## Base de datos (Supabase)
+Los 10 datasets se publican en una base de datos PostgreSQL de [Supabase](https://supabase.com/dashboard/organizations) y el servidor MCP los lee de allí.
+1. En Supabase crea un proyecto y copia la cadena de *Connect → Session pooler*.
+2. Añádela al `.env` como `SUPABASE_DB_URL` (ver `.env.example`).
+3. Carga los datos (crea las tablas e inserta las filas de `data/*.csv`):
+   ```bash
+   python "../../BD Supabase/cargar_datos_supabase.py"
+   ```
+   O pega `01_crear_esquema_supabase.sql` y `02_insertar_datos_supabase.sql` en el *SQL Editor* de Supabase.
+4. Comprueba: `python scripts/test_connections.py` muestra `origen de datos (supabase)` y `pytest` verifica que Supabase coincide con los CSV.
+
+Sin `SUPABASE_DB_URL` (o con `RENFE_BI_ORIGEN=csv`) el proyecto usa los CSV de `data/`.
+
 ## Datos
 Todas las cifras proceden de fuentes públicas listadas en `data/fuentes.csv` (notas trimestrales y anual de la CNMC, INE, resultados publicados de Renfe, Iryo y Ouigo). Las filas con `tipo_dato=derivado` se calculan a partir de variaciones publicadas y lo indican en `nota`. Las cifras de víctimas de Adamuz no se incluyen porque difieren entre medios.
 

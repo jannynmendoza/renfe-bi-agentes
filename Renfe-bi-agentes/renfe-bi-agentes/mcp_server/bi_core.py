@@ -5,8 +5,11 @@ Todo el cálculo vive aquí, en Python puro (sin dependencias externas), para qu
   * el servidor MCP (server.py) solo exponga funciones ya probadas,
   * los tests unitarios (tests/test_bi_core.py) puedan validarlas sin levantar MCP.
 
-Los datos están en ../data/*.csv y proceden de fuentes públicas reales
-(CNMC, INE, prensa económica). Cada fila lleva su `fuente_id`, resoluble con fuentes().
+Los datos se leen de la base de datos Supabase (PostgreSQL) si SUPABASE_DB_URL está
+definida (en el entorno o en .env); si no, de ../data/*.csv. RENFE_BI_ORIGEN=csv fuerza
+los CSV. Ambos orígenes contienen las mismas tablas (ver BD Supabase/ en el repositorio).
+Proceden de fuentes públicas reales (CNMC, INE, prensa económica). Cada fila lleva su
+`fuente_id`, resoluble con fuentes().
 Las filas con tipo_dato="derivado" se calculan a partir de cifras publicadas y lo indican.
 """
 from __future__ import annotations
@@ -18,7 +21,16 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
-DATA_DIR = Path(os.environ.get("RENFE_BI_DATA_DIR", Path(__file__).resolve().parent.parent / "data"))
+ROOT = Path(__file__).resolve().parent.parent
+try:
+    from dotenv import load_dotenv
+    load_dotenv(ROOT / ".env")
+except ImportError:  # python-dotenv es opcional: sin él solo cuentan las variables de entorno
+    pass
+
+DATA_DIR = Path(os.environ.get("RENFE_BI_DATA_DIR", ROOT / "data"))
+SUPABASE_DB_URL = os.environ.get("SUPABASE_DB_URL", "").strip()
+ORIGEN = os.environ.get("RENFE_BI_ORIGEN", "supabase" if SUPABASE_DB_URL else "csv").strip().lower()
 
 CORREDORES_VALIDOS = ("BCN", "VLC", "ALI", "SEV", "MAL")
 ORDEN_PERIODOS = ["2025T1", "2025T2", "2025T3", "2025T4", "2026T1", "2026T2"]
@@ -49,10 +61,35 @@ def _convertir(fila: dict[str, str]) -> dict[str, Any]:
     return out
 
 
+@lru_cache(maxsize=1)
+def _cargar_supabase() -> dict[str, tuple[dict[str, Any], ...]]:
+    """Lee las 10 tablas de Supabase en una sola conexión, en el orden original (columna id).
+
+    Los valores se pasan a texto antes de _convertir para que el resultado sea idéntico
+    al de los CSV (NULL -> "" en texto, None en columnas numéricas).
+    """
+    if not SUPABASE_DB_URL:
+        raise RuntimeError("RENFE_BI_ORIGEN=supabase pero falta SUPABASE_DB_URL")
+    import psycopg
+
+    datos = {}
+    with psycopg.connect(SUPABASE_DB_URL, connect_timeout=15) as conn, conn.cursor() as cur:
+        for tabla in TABLAS:
+            cur.execute(f"SELECT * FROM {tabla} ORDER BY id")
+            cols = [d.name for d in cur.description]
+            datos[tabla] = tuple(
+                _convertir({k: "" if v is None else str(v) for k, v in zip(cols, fila) if k != "id"})
+                for fila in cur.fetchall()
+            )
+    return datos
+
+
 @lru_cache(maxsize=None)
 def cargar(tabla: str) -> tuple[dict[str, Any], ...]:
     if tabla not in TABLAS:
         raise DatoNoDisponible(f"Tabla desconocida: {tabla}")
+    if ORIGEN == "supabase":
+        return _cargar_supabase()[tabla]
     ruta = DATA_DIR / f"{tabla}.csv"
     with ruta.open(encoding="utf-8", newline="") as f:
         return tuple(_convertir(r) for r in csv.DictReader(f))
@@ -80,7 +117,15 @@ def estado_datos() -> dict[str, Any]:
             resumen[t] = {"ok": True, "filas": len(cargar(t))}
         except Exception as e:  # noqa: BLE001
             resumen[t] = {"ok": False, "error": str(e)}
-    return {"data_dir": str(DATA_DIR), "tablas": resumen, "ok": all(v["ok"] for v in resumen.values())}
+    origen = {"origen": "supabase", "host": _host_supabase()} if ORIGEN == "supabase" else \
+             {"origen": "csv", "data_dir": str(DATA_DIR)}
+    return {**origen, "tablas": resumen, "ok": all(v["ok"] for v in resumen.values())}
+
+
+def _host_supabase() -> str:
+    """Host de la cadena de conexión, sin usuario ni contraseña (para informes)."""
+    from urllib.parse import urlparse
+    return urlparse(SUPABASE_DB_URL).hostname or "?"
 
 
 def fuentes(fuente_ids: list[str] | None = None) -> list[dict[str, Any]]:

@@ -8,6 +8,15 @@ def test_todas_las_tablas_cargan():
     assert c.estado_datos()["ok"]
 
 
+@pytest.mark.skipif(c.ORIGEN != "supabase", reason="sin SUPABASE_DB_URL los datos ya salen de los CSV")
+def test_supabase_coincide_con_csv():
+    import csv
+    for t in c.TABLAS:
+        with (c.DATA_DIR / f"{t}.csv").open(encoding="utf-8", newline="") as f:
+            esperado = tuple(c._convertir(r) for r in csv.DictReader(f))
+        assert c.cargar(t) == esperado, t
+
+
 def test_todas_las_filas_tienen_fuente_existente():
     ids = {f["fuente_id"] for f in c.fuentes()}
     for t in c.TABLAS:

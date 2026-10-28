@@ -87,6 +87,11 @@ async def probar_mcp(live: bool) -> list[dict]:
                     ok, det = False, f"{type(e).__name__}: {e}"
                 resultados.append({"prueba": f"tool {nombre_t}", "ok": ok, "detalle": det})
 
+            datos = _payload(await session.call_tool("estado_conexiones", {}))["datos_locales"]
+            destino = datos.get("host") or datos.get("data_dir")
+            resultados.append({"prueba": f"origen de datos ({datos['origen']})", "ok": datos["ok"],
+                               "detalle": f"{destino}; {sum(t.get('filas', 0) for t in datos['tablas'].values())} filas"})
+
             # error controlado: corredor inexistente debe devolver error, no tumbar el servidor
             r = await session.call_tool("kpis_corredor", {"corredor_id": "XXX"})
             err = getattr(r, "isError", getattr(r, "is_error", False))
@@ -108,7 +113,8 @@ async def probar_mcp(live: bool) -> list[dict]:
 def _env_base() -> dict:
     import os
     keep = ("PATH", "HOME", "SYSTEMROOT", "HTTPS_PROXY", "HTTP_PROXY", "NO_PROXY",
-            "SSL_CERT_FILE", "REQUESTS_CA_BUNDLE", "USERPROFILE", "APPDATA")
+            "SSL_CERT_FILE", "REQUESTS_CA_BUNDLE", "USERPROFILE", "APPDATA",
+            "SUPABASE_DB_URL", "RENFE_BI_ORIGEN")
     return {k: os.environ[k] for k in keep if k in os.environ}
 
 
