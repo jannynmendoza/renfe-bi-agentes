@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Radar Competitivo AV</title>
+<script src="chart.umd.min.js"></script>
+<style>
+:root {
+  --bg: #f5f4f8; --panel: #ffffff; --panel-2: #f0eef5; --text: #1d1a26; --muted: #6b6578;
+  --line: #e3dfeb; --accent: #6d2077; --accent-soft: #f3e8f5; --ok: #1d7a4f; --ok-soft: #e3f4ec;
+  --bad: #b3261e; --bad-soft: #fbe9e7; --warn: #9a6200; --warn-soft: #fdf1dc; --info: #1f5fa8; --info-soft: #e5eefa;
+  --c1: #6d2077; --c2: #d9762b; --c3: #2a8c82; --c4: #4565c4; --c5: #b8417a;
+  --shadow: 0 1px 2px rgba(20,10,30,.06), 0 4px 16px rgba(20,10,30,.05);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #141218; --panel: #1d1b22; --panel-2: #26232d; --text: #ece8f2; --muted: #a39cb0;
+    --line: #34303d; --accent: #d68fe0; --accent-soft: #3a2540; --ok: #5fcf98; --ok-soft: #1c3529;
+    --bad: #f28b82; --bad-soft: #3d2120; --warn: #f0b75a; --warn-soft: #3a2d14; --info: #8ab4f8; --info-soft: #1d2b40;
+    --c1: #d68fe0; --c2: #f0a35e; --c3: #5cc7bb; --c4: #8aa3f0; --c5: #ec86b8;
+    --shadow: none;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #141218; --panel: #1d1b22; --panel-2: #26232d; --text: #ece8f2; --muted: #a39cb0;
+  --line: #34303d; --accent: #d68fe0; --accent-soft: #3a2540; --ok: #5fcf98; --ok-soft: #1c3529;
+  --bad: #f28b82; --bad-soft: #3d2120; --warn: #f0b75a; --warn-soft: #3a2d14; --info: #8ab4f8; --info-soft: #1d2b40;
+  --c1: #d68fe0; --c2: #f0a35e; --c3: #5cc7bb; --c4: #8aa3f0; --c5: #ec86b8;
+  --shadow: none;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body { background: var(--bg); color: var(--text); font: 14px/1.5 "Segoe UI", system-ui, -apple-system, sans-serif; display: flex; }
+a { color: var(--accent); }
+h1, h2, h3 { margin: 0; font-weight: 600; }
+h2 { font-size: 22px; letter-spacing: -.01em; }
+h3 { font-size: 15px; }
+
+/* ---------- navegación ---------- */
+nav { width: 232px; flex-shrink: 0; background: var(--panel); border-right: 1px solid var(--line); display: flex; flex-direction: column; padding: 20px 12px; }
+.marca { padding: 0 10px 20px; }
+.marca b { display: block; font-size: 16px; color: var(--accent); }
+.marca span { font-size: 12px; color: var(--muted); }
+nav button { all: unset; cursor: pointer; display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px; color: var(--muted); font-weight: 500; margin-bottom: 2px; }
+nav button:hover { background: var(--panel-2); color: var(--text); }
+nav button.activo { background: var(--accent-soft); color: var(--accent); }
+nav button svg { width: 18px; height: 18px; flex-shrink: 0; }
+.nav-pie { margin-top: auto; padding: 12px; font-size: 12px; color: var(--muted); border-top: 1px solid var(--line); }
+.punto { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--muted); margin-right: 6px; }
+.punto.ok { background: var(--ok); } .punto.bad { background: var(--bad); }
+.tema { all: unset; cursor: pointer; font-size: 12px; color: var(--muted); margin-top: 8px; display: inline-block; }
+.tema:hover { color: var(--text); }
+
+/* ---------- contenido ---------- */
+main { flex: 1; overflow-y: auto; padding: 28px 32px 48px; }
+.cabecera { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
+.cabecera p { margin: 4px 0 0; color: var(--muted); }
+.vista { display: none; } .vista.activa { display: block; }
+.grid { display: grid; gap: 16px; }
+.g4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.g3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.g2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.g5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.span2 { grid-column: span 2; }
+@media (max-width: 1200px) { .g4, .g5 { grid-template-columns: repeat(2, minmax(0, 1fr)); } .g3 { grid-template-columns: 1fr 1fr; } }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; box-shadow: var(--shadow); min-width: 0; }
+.panel h3 { margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.panel h3 small { font-weight: 400; color: var(--muted); font-size: 12px; }
+.mt { margin-top: 16px; }
+
+.kpi .etq { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+.kpi .valor { font-size: 28px; font-weight: 600; margin: 4px 0 2px; font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+.kpi .sub { font-size: 12px; color: var(--muted); }
+.delta { font-weight: 600; font-variant-numeric: tabular-nums; }
+.delta.pos { color: var(--ok); } .delta.neg { color: var(--bad); }
+
+.tarjeta-corr { cursor: pointer; transition: border-color .15s, transform .15s; }
+.tarjeta-corr:hover { border-color: var(--accent); transform: translateY(-1px); }
+.tarjeta-corr .id { font-size: 12px; font-weight: 700; color: var(--accent); letter-spacing: .06em; }
+.tarjeta-corr .nombre { font-weight: 600; margin: 2px 0 10px; }
+.tarjeta-corr dl { display: grid; grid-template-columns: 1fr auto; gap: 4px 8px; margin: 0 0 12px; font-size: 13px; }
+.tarjeta-corr dt { color: var(--muted); } .tarjeta-corr dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }
+
+.badge { display: inline-block; white-space: nowrap; padding: 3px 9px; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: .03em; }
+.b-RECUPERAR { background: var(--bad-soft); color: var(--bad); }
+.b-PREMIUM { background: var(--accent-soft); color: var(--accent); }
+.b-ESTIMULAR { background: var(--info-soft); color: var(--info); }
+.b-MANTENER { background: var(--warn-soft); color: var(--warn); }
+.chip { display: inline-block; padding: 1px 7px; border-radius: 5px; background: var(--panel-2); color: var(--muted); font-size: 11px; font-family: Consolas, monospace; cursor: help; }
+.tag-der { display: inline-block; padding: 1px 6px; border-radius: 5px; background: var(--warn-soft); color: var(--warn); font-size: 11px; }
+
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { text-align: left; color: var(--muted); font-weight: 600; font-size: 12px; padding: 8px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+td { padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tabla-scroll { overflow-x: auto; }
+.nulo { color: var(--muted); }
+
+select, input[type=number] { font: inherit; color: var(--text); background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; }
+.btn { font: inherit; font-weight: 600; cursor: pointer; border: 1px solid var(--accent); background: var(--accent); color: #fff; border-radius: 8px; padding: 8px 14px; }
+:root[data-theme="dark"] .btn { color: #1d1b22; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn { color: #1d1b22; } }
+.btn.sec { background: transparent; color: var(--accent); }
+.btn:disabled { opacity: .5; cursor: wait; }
+.filtros { display: flex; gap: 6px; flex-wrap: wrap; }
+.filtros button { font: inherit; cursor: pointer; border: 1px solid var(--line); background: var(--panel); color: var(--muted); border-radius: 999px; padding: 5px 12px; font-size: 13px; }
+.filtros button.activo { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+
+.recomendacion { border-left: 4px solid var(--accent); }
+.recomendacion .accion { font-size: 20px; font-weight: 700; margin: 6px 0; }
+.senales { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; margin-top: 14px; }
+.senal { background: var(--panel-2); border-radius: 8px; padding: 8px 10px; font-size: 12px; }
+.senal b { display: block; font-size: 15px; font-variant-numeric: tabular-nums; }
+.senal span { color: var(--muted); }
+
+.eventos { list-style: none; margin: 0; padding: 0; }
+.eventos li { display: grid; grid-template-columns: 92px 1fr; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--line); }
+.eventos li:last-child { border-bottom: 0; }
+.eventos .fecha { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 12px; }
+.eventos .tipo { font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--accent); font-weight: 700; }
+
+.sim-control { display: flex; gap: 24px; align-items: center; flex-wrap: wrap; }
+.slider-caja { flex: 1; min-width: 280px; }
+.slider-caja .valor-slider { font-size: 34px; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--accent); }
+input[type=range] { width: 100%; accent-color: var(--accent); }
+.escala { display: flex; justify-content: space-between; color: var(--muted); font-size: 11px; }
+.escenario { text-align: left; }
+.escenario.central { border: 2px solid var(--accent); }
+.escenario .titulo { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); font-weight: 700; }
+.escenario .grande { font-size: 30px; font-weight: 700; font-variant-numeric: tabular-nums; margin: 6px 0; }
+.escenario dl { display: grid; grid-template-columns: 1fr auto; gap: 4px; margin: 10px 0 0; font-size: 13px; }
+.escenario dt { color: var(--muted); } .escenario dd { margin: 0; font-variant-numeric: tabular-nums; text-align: right; }
+.aviso { background: var(--warn-soft); color: var(--warn); border-radius: 8px; padding: 10px 12px; font-size: 13px; }
+.error { background: var(--bad-soft); color: var(--bad); border-radius: 8px; padding: 10px 12px; }
+.lista-supuestos { margin: 0; padding-left: 18px; color: var(--muted); font-size: 13px; }
+
+.fuente { display: block; text-decoration: none; color: inherit; }
+.fuente:hover { border-color: var(--accent); }
+.fuente .org { font-size: 12px; color: var(--muted); }
+.fuente .tit { font-weight: 600; margin: 4px 0; }
+.fuente .url { font-size: 12px; color: var(--accent); word-break: break-all; }
+
+.cargando { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, transparent, var(--accent), transparent); background-size: 200% 100%; animation: barra 1s linear infinite; display: none; z-index: 9; }
+.cargando.on { display: block; }
+@keyframes barra { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+.lienzo { position: relative; height: 280px; }
+.lienzo.bajo { height: 220px; }
+</style>
+</head>
+<body>
+<div class="cargando" id="cargando"></div>
+
+<nav>
+  <div class="marca"><b>Radar Competitivo AV</b><span>Renfe Viajeros · BI con agentes</span></div>
+  <button data-vista="resumen" class="activo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>Resumen</button>
+  <button data-vista="corredor"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19h16M6 15l4-8 4 5 4-7"/></svg>Corredor</button>
+  <button data-vista="simulador"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg>Simulador de precios</button>
+  <button data-vista="competidores"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V9l7-5 7 5v12M9 21v-6h6v6"/></svg>Competidores</button>
+  <button data-vista="demanda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>Demanda INE</button>
+  <button data-vista="fuentes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h12l4 4v12H4z"/><path d="M8 12h8M8 16h5"/></svg>Fuentes y datos</button>
+  <div class="nav-pie">
+    <div id="estado-pie"><span class="punto"></span>Conectando…</div>
+    <button class="tema" id="btn-tema">Cambiar tema</button>
+  </div>
+</nav>
+
+<main>
+  <!-- ==================== RESUMEN ==================== -->
+  <section class="vista activa" id="v-resumen">
+    <div class="cabecera">
+      <div><h2>Resumen del mercado de alta velocidad</h2><p>Los cinco corredores liberalizados: demanda, precios, cuota de Renfe y acción recomendada.</p></div>
+    </div>
+    <div class="grid g4" id="kpis-resumen"></div>
+    <h3 class="mt" style="margin-bottom:10px">Corredores <small style="color:var(--muted);font-weight:400">· haz clic para ver el detalle</small></h3>
+    <div class="grid g5" id="tarjetas-corr"></div>
+    <div class="grid g2 mt">
+      <div class="panel"><h3>Mercado estimado 2025 <small>M€ · total vs. Renfe</small></h3><div class="lienzo"><canvas id="ch-mercado"></canvas></div></div>
+      <div class="panel"><h3>Viajeros AV totales por trimestre <small>millones</small></h3><div class="lienzo"><canvas id="ch-total"></canvas></div></div>
+    </div>
+    <div class="panel mt"><h3>Tabla comparativa</h3><div class="tabla-scroll" id="tabla-comparar"></div></div>
+  </section>
+
+  <!-- ==================== CORREDOR ==================== -->
+  <section class="vista" id="v-corredor">
+    <div class="cabecera">
+      <div><h2 id="corr-titulo">Corredor</h2><p id="corr-sub"></p></div>
+      <select id="sel-corredor"></select>
+    </div>
+    <div class="panel recomendacion" id="corr-reco"></div>
+    <div class="grid g4 mt" id="corr-kpis"></div>
+    <div class="grid g2 mt">
+      <div class="panel"><h3>Viajeros trimestrales <small>barras: millones · línea: var. interanual %</small></h3><div class="lienzo"><canvas id="ch-viajeros"></canvas></div></div>
+      <div class="panel"><h3>Cuota de mercado por operador <small id="cuota-periodo"></small></h3><div class="lienzo"><canvas id="ch-cuotas"></canvas></div></div>
+    </div>
+    <div class="grid g2 mt">
+      <div class="panel"><h3>Precios e ingresos medios</h3><div class="tabla-scroll" id="corr-precios"></div></div>
+      <div class="panel"><h3>Elasticidad precio-demanda <small id="elas-clase"></small></h3><div class="tabla-scroll" id="corr-elas"></div></div>
+    </div>
+    <div class="panel mt"><h3>Eventos que explican la demanda</h3><ul class="eventos" id="corr-eventos"></ul></div>
+  </section>
+
+  <!-- ==================== SIMULADOR ==================== -->
+  <section class="vista" id="v-simulador">
+    <div class="cabecera">
+      <div><h2>Simulador de precios</h2><p>¿Qué pasa con viajeros, ingresos y ocupación si cambia el precio medio del corredor?</p></div>
+    </div>
+    <div class="panel">
+      <div class="sim-control">
+        <label>Corredor<br><select id="sim-corredor"></select></label>
+        <div class="slider-caja">
+          <div style="display:flex;justify-content:space-between;align-items:baseline"><span>Cambio de precio</span><span class="valor-slider" id="sim-valor">+5 %</span></div>
+          <input type="range" id="sim-pct" min="-50" max="50" step="1" value="5">
+          <div class="escala"><span>−50 %</span><span>0</span><span>+50 %</span></div>
+        </div>
+        <label><input type="checkbox" id="sim-usar-elas"> Elasticidad propia<br><input type="number" id="sim-elas" step="0.05" value="-0.8" disabled style="width:110px"></label>
+      </div>
+    </div>
+    <div id="sim-error" class="mt"></div>
+    <div class="grid g3 mt" id="sim-escenarios"></div>
+    <div class="grid g2 mt">
+      <div class="panel"><h3>Ingresos del mercado <small>M€ · base 2025 vs. escenarios</small></h3><div class="lienzo"><canvas id="ch-sim"></canvas></div></div>
+      <div class="panel"><h3>Supuestos del modelo</h3><div id="sim-base"></div><ul class="lista-supuestos mt" id="sim-supuestos"></ul></div>
+    </div>
+  </section>
+
+  <!-- ==================== COMPETIDORES ==================== -->
+  <section class="vista" id="v-competidores">
+    <div class="cabecera">
+      <div><h2>Competidores</h2><p>Indicadores financieros y operativos de Renfe, Iryo, Ouigo y del sector.</p></div>
+      <div class="filtros" id="filtro-empresa"></div>
+    </div>
+    <div class="panel"><div class="tabla-scroll" id="tabla-comp"></div></div>
+  </section>
+
+  <!-- ==================== DEMANDA ==================== -->
+  <section class="vista" id="v-demanda">
+    <div class="cabecera">
+      <div><h2>Demanda mensual (INE)</h2><p>Datos guardados de 2026 o consulta en vivo a la API del INE (tabla 49359).</p></div>
+      <button class="btn" id="btn-ine">Consultar INE en vivo</button>
+    </div>
+    <div id="demanda-aviso"></div>
+    <div class="panel mt" id="demanda-graf" style="display:none"><h3>Series en vivo <small id="demanda-n"></small></h3><div class="lienzo"><canvas id="ch-demanda"></canvas></div></div>
+    <div class="panel mt"><div class="tabla-scroll" id="tabla-demanda"></div></div>
+  </section>
+
+  <!-- ==================== FUENTES ==================== -->
+  <section class="vista" id="v-fuentes">
+    <div class="cabecera">
+      <div><h2>Fuentes y estado de los datos</h2><p>Cada cifra de la aplicación cita un <span class="chip">fuente_id</span> de esta lista.</p></div>
+      <button class="btn sec" id="btn-recargar">Recargar datos</button>
+    </div>
+    <div class="panel" id="estado-datos"></div>
+    <div class="grid g3 mt" id="lista-fuentes"></div>
+  </section>
+</main>
+
+<script>
+const $ = s => document.querySelector(s);
+const CORREDORES = ["BCN", "VLC", "ALI", "SEV", "MAL"];
+const nf = (v, d = 1) => v == null ? '<span class="nulo">—</span>' : Number(v).toLocaleString("es-ES", { minimumFractionDigits: d, maximumFractionDigits: d });
+const pct = (v, d = 1) => v == null ? '<span class="nulo">—</span>' : `<span class="delta ${v > 0 ? "pos" : v < 0 ? "neg" : ""}">${v > 0 ? "+" : ""}${nf(v, d)} %</span>`;
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const badge = a => `<span class="badge b-${esc(a).split(" ")[0]}">${esc(a)}</span>`;
+let FUENTES = {};
+const chip = id => id ? `<span class="chip" title="${esc(FUENTES[id]?.titulo || id)}">${esc(id)}</span>` : "";
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const COLORES = () => ["--c1", "--c2", "--c3", "--c4", "--c5"].map(css);
+
+let pendientes = 0;
+async function api(ruta) {
+  pendientes++; $("#cargando").classList.add("on");
+  try {
+    const r = await fetch(ruta);
+    const j = await r.json();
+    if (!r.ok) throw new Error(j.error || r.statusText);
+    return j;
+  } finally {
+    if (--pendientes === 0) $("#cargando").classList.remove("on");
+  }
+}
+
+// ---------- gráficos ----------
+const graficos = {};
+function grafico(id, config) {
+  graficos[id]?.destroy();
+  Chart.defaults.color = css("--muted");
+  Chart.defaults.borderColor = css("--line");
+  Chart.defaults.font.family = '"Segoe UI", system-ui, sans-serif';
+  Chart.defaults.elements.line.cubicInterpolationMode = "monotone";
+  config.options = Object.assign({ responsive: true, maintainAspectRatio: false, plugins: { legend: { position: "bottom", labels: { boxWidth: 12 } } } }, config.options || {});
+  graficos[id] = new Chart(document.getElementById(id), config);
+}
+
+// ---------- navegación ----------
+const cargadas = {};
+function irA(vista) {
+  document.querySelectorAll("nav button[data-vista]").forEach(b => b.classList.toggle("activo", b.dataset.vista === vista));
+  document.querySelectorAll(".vista").forEach(v => v.classList.toggle("activa", v.id === "v-" + vista));
+  if (!cargadas[vista]) { cargadas[vista] = true; CARGAR[vista]?.(); }
+  $("main").scrollTop = 0;
+}
+document.querySelectorAll("nav button[data-vista]").forEach(b => b.onclick = () => irA(b.dataset.vista));
+
+// ---------- tema ----------
+const temaGuardado = (() => { try { return localStorage.getItem("tema"); } catch { return null; } })();
+if (temaGuardado) document.documentElement.dataset.theme = temaGuardado;
+$("#btn-tema").onclick = () => {
+  const oscuro = document.documentElement.dataset.theme
+    ? document.documentElement.dataset.theme === "dark"
+    : matchMedia("(prefers-color-scheme: dark)").matches;
+  document.documentElement.dataset.theme = oscuro ? "light" : "dark";
+  try { localStorage.setItem("tema", document.documentElement.dataset.theme); } catch {}
+  Object.keys(cargadas).forEach(k => cargadas[k] && CARGAR[k]?.());
+};
+
+// ==================== RESUMEN ====================
+async function cargarResumen() {
+  const d = await api("/api/resumen");
+  const c = d.corredores, t = d.total_2025;
+  const mercado = c.reduce((s, r) => s + (r.mercado_estimado_2025_MEUR || 0), 0);
+  const renfe = c.reduce((s, r) => s + (r.ingreso_renfe_estimado_2025_MEUR || 0), 0);
+  const ult = [...d.serie_total].reverse().find(r => r.viajeros_millones != null);
+  $("#kpis-resumen").innerHTML = `
+    <div class="panel kpi"><div class="etq">Viajeros AV 2025</div><div class="valor">${nf(t.viajeros_millones)} M</div><div class="sub">${pct(t.var_interanual_pct)} vs. 2024 · ${chip(t.fuente_id)}</div></div>
+    <div class="panel kpi"><div class="etq">Mercado estimado 2025</div><div class="valor">${nf(mercado, 0)} M€</div><div class="sub">5 corredores · viajeros × ingreso medio</div></div>
+    <div class="panel kpi"><div class="etq">Ingreso Renfe estimado</div><div class="valor">${nf(renfe, 0)} M€</div><div class="sub">${nf(renfe / mercado * 100, 0)} % del mercado de los corredores</div></div>
+    <div class="panel kpi"><div class="etq">Último trimestre (${esc(ult.periodo)})</div><div class="valor">${nf(ult.viajeros_millones)} M</div><div class="sub">${pct(ult.var_interanual_pct)} interanual · ${chip(ult.fuente_id)}</div></div>`;
+
+  $("#tarjetas-corr").innerHTML = c.map(r => `
+    <div class="panel tarjeta-corr" data-id="${r.corredor_id}">
+      <div class="id">${r.corredor_id}</div><div class="nombre">${esc(r.nombre)}</div>
+      <dl><dt>Viajeros 2025</dt><dd>${nf(r.viajeros_2025_M)} M</dd>
+          <dt>Ingreso medio</dt><dd>${nf(r.ingreso_medio_2025_eur, 2)} €</dd>
+          <dt>Cuota Renfe</dt><dd>${nf(r.cuota_renfe_ultima_pct, 0)} %</dd>
+          <dt>Última var. (${esc(r.periodo_ultima_var)})</dt><dd>${pct(r.ultima_var_interanual_pct, 0)}</dd></dl>
+      ${badge(r.accion)}
+    </div>`).join("");
+  document.querySelectorAll(".tarjeta-corr").forEach(e => e.onclick = () => { $("#sel-corredor").value = e.dataset.id; irA("corredor"); cargarCorredor(); });
+
+  const col = COLORES();
+  grafico("ch-mercado", { type: "bar", data: { labels: c.map(r => r.corredor_id), datasets: [
+      { label: "Mercado total", data: c.map(r => r.mercado_estimado_2025_MEUR), backgroundColor: col[0], borderRadius: 4 },
+      { label: "Ingreso Renfe", data: c.map(r => r.ingreso_renfe_estimado_2025_MEUR), backgroundColor: col[1], borderRadius: 4 }] } });
+  grafico("ch-total", { type: "line", data: { labels: d.serie_total.map(r => r.periodo), datasets: [
+      { label: "Viajeros (M)", data: d.serie_total.map(r => r.viajeros_millones), borderColor: col[0], backgroundColor: col[0], tension: .3, spanGaps: true, pointRadius: 4 }] },
+    options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: false } } } });
+
+  $("#tabla-comparar").innerHTML = `<table><thead><tr><th>Corredor</th><th class="n">Viajeros 2025 (M)</th><th class="n">Var. 2025</th><th class="n">Ingreso medio (€)</th><th class="n">Var. precio</th><th class="n">Mercado (M€)</th><th class="n">Cuota Renfe</th><th class="n">Cánones / coste</th><th>Resultado billetes vs. coste</th><th>Acción</th></tr></thead><tbody>
+    ${c.map(r => `<tr><td><b>${r.corredor_id}</b> ${esc(r.nombre)}</td><td class="n">${nf(r.viajeros_2025_M)}</td><td class="n">${pct(r.var_viajeros_2025_pct)}</td><td class="n">${nf(r.ingreso_medio_2025_eur, 2)}</td><td class="n">${pct(r.var_precio_2025_pct)}</td><td class="n">${nf(r.mercado_estimado_2025_MEUR)}</td><td class="n">${nf(r.cuota_renfe_ultima_pct, 0)} %</td><td class="n">${nf(r.peso_canones_en_coste_pct, 0)} %</td><td>${esc(r.resultado_billetes_vs_coste)}</td><td>${badge(r.accion)}</td></tr>`).join("")}
+  </tbody></table>`;
+}
+
+// ==================== CORREDOR ====================
+async function cargarCorredor() {
+  const id = $("#sel-corredor").value;
+  const d = await api("/api/corredor?id=" + id);
+  const r = d.resumen, rec = d.recomendacion, s = rec.senales;
+  $("#corr-titulo").textContent = `${r.nombre} (${r.corredor_id})`;
+  $("#corr-sub").textContent = `Resultado de billetes frente a coste en 2025: ${r.resultado_billetes_vs_coste}`;
+  $("#corr-reco").innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+      <span style="color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.05em;font-weight:700">Acción recomendada</span>
+      <span class="chip">confianza ${esc(rec.confianza)}</span></div>
+    <div class="accion">${badge(rec.accion)}</div>
+    <div>${esc(rec.detalle)}</div>
+    <div class="senales">
+      <div class="senal"><span>Última var. viajeros (${esc(s.periodo)})</span><b>${pct(s.ultima_var_viajeros_pct, 0)}</b></div>
+      <div class="senal"><span>Elasticidad</span><b>${esc(s.clase_elasticidad)}</b></div>
+      <div class="senal"><span>Tendencia cuota Renfe</span><b>${s.tendencia_cuota_renfe_pp == null ? "—" : (s.tendencia_cuota_renfe_pp > 0 ? "+" : "") + nf(s.tendencia_cuota_renfe_pp, 0) + " pp"}</b></div>
+      <div class="senal"><span>Corredor rentable</span><b>${s.corredor_rentable ? "Sí" : "No"}</b></div>
+      <div class="senal"><span>Ocupación de referencia</span><b>${nf(s.ocupacion_ref_pct, 0)} %</b></div>
+      <div class="senal"><span>Shocks 2026</span><b>${(s.shocks_2026 || []).length}</b></div>
+    </div>`;
+  $("#corr-kpis").innerHTML = `
+    <div class="panel kpi"><div class="etq">Viajeros 2025</div><div class="valor">${nf(r.viajeros_2025_M)} M</div><div class="sub">${pct(r.var_viajeros_2025_pct)} vs. 2024</div></div>
+    <div class="panel kpi"><div class="etq">Ingreso medio 2025</div><div class="valor">${nf(r.ingreso_medio_2025_eur, 2)} €</div><div class="sub">${pct(r.var_precio_2025_pct)} vs. 2024</div></div>
+    <div class="panel kpi"><div class="etq">Mercado estimado</div><div class="valor">${nf(r.mercado_estimado_2025_MEUR, 0)} M€</div><div class="sub">Renfe ≈ ${nf(r.ingreso_renfe_estimado_2025_MEUR, 0)} M€</div></div>
+    <div class="panel kpi"><div class="etq">Cuota Renfe (${esc(r.periodo_cuota)})</div><div class="valor">${nf(r.cuota_renfe_ultima_pct, 0)} %</div><div class="sub">Cánones: ${nf(r.peso_canones_en_coste_pct, 0)} % del coste</div></div>`;
+
+  const col = COLORES(), v = d.viajeros_trimestral;
+  grafico("ch-viajeros", { data: { labels: v.map(x => x.periodo), datasets: [
+      { type: "bar", label: "Viajeros (M)", data: v.map(x => x.viajeros_millones), backgroundColor: v.map(x => x.tipo_dato === "derivado" ? col[0] + "77" : col[0]), borderRadius: 4, yAxisID: "y" },
+      { type: "line", label: "Var. interanual (%)", data: v.map(x => x.var_interanual_pct), borderColor: col[1], backgroundColor: col[1], tension: .3, spanGaps: true, yAxisID: "y1" }] },
+    options: { scales: { y: { position: "left", title: { display: true, text: "M viajeros" } }, y1: { position: "right", grid: { drawOnChartArea: false }, title: { display: true, text: "%" } } },
+      plugins: { tooltip: { callbacks: { afterBody: it => { const f = v[it[0].dataIndex]; return [f.tipo_dato === "derivado" ? "Dato derivado" : "Dato publicado", f.nota, "Fuente: " + f.fuente_id].filter(Boolean); } } } } } });
+
+  const periodos = [...new Set(d.cuotas.map(x => x.periodo))].sort();
+  const ultP = periodos.at(-1), cu = d.cuotas.filter(x => x.periodo === ultP);
+  const resto = 100 - cu.reduce((a, x) => a + x.cuota_pct, 0);
+  const etiquetas = cu.map(x => x.operador).concat(resto > 0.5 ? ["Otros / sin desglose"] : []);
+  $("#cuota-periodo").textContent = ultP ? `${ultP} · ${cu.map(x => x.fuente_id)[0]}` : "";
+  grafico("ch-cuotas", { type: "doughnut", data: { labels: etiquetas, datasets: [{ data: cu.map(x => x.cuota_pct).concat(resto > 0.5 ? [resto] : []), backgroundColor: [col[0], col[1], col[2], css("--line")], borderColor: css("--panel"), borderWidth: 2 }] },
+    options: { cutout: "62%", plugins: { legend: { position: "right" }, tooltip: { callbacks: { label: c => ` ${c.label}: ${c.raw} %` } } } } });
+
+  $("#corr-precios").innerHTML = `<table><thead><tr><th>Periodo</th><th>Métrica</th><th class="n">€</th><th class="n">Var.</th><th>Fuente</th></tr></thead><tbody>
+    ${d.precios.map(p => `<tr><td>${esc(p.periodo)}</td><td>${esc(p.metrica.replaceAll("_", " "))}</td><td class="n">${nf(p.precio_eur, 2)}</td><td class="n">${pct(p.var_interanual_pct, 0)}</td><td>${chip(p.fuente_id)}</td></tr>`).join("")}</tbody></table>
+    <p style="color:var(--muted);font-size:12px;margin:10px 0 0">Las métricas no son comparables entre sí: no mezcles precio web con ingreso medio.</p>`;
+
+  const e = d.elasticidad;
+  $("#elas-clase").innerHTML = `mediana ${nf(e.resumen.mediana, 2)} · ${esc(e.resumen.clase)}`;
+  $("#corr-elas").innerHTML = `<table><thead><tr><th>Periodo</th><th class="n">Δ precio</th><th class="n">Δ viajeros</th><th class="n">Elasticidad</th><th>Válida</th></tr></thead><tbody>
+    ${e.observaciones.map(o => `<tr><td>${esc(o.periodo)}</td><td class="n">${pct(o.var_precio_pct, 1)}</td><td class="n">${pct(o.var_viajeros_pct, 1)}</td><td class="n">${nf(o.elasticidad_aparente, 2)}</td><td>${o.interpretable ? "Sí" : '<span class="nulo">No</span>'}</td></tr>`).join("")}</tbody></table>
+    <p style="color:var(--muted);font-size:12px;margin:10px 0 0">${esc(e.advertencia)}</p>`;
+
+  $("#corr-eventos").innerHTML = d.eventos.length ? d.eventos.map(x => `<li><div class="fecha">${esc(x.fecha)}</div><div><div class="tipo">${esc(x.tipo)}</div>${esc(x.evento)} ${chip(x.fuente_id)}</div></li>`).join("") : '<li><span class="nulo">Sin eventos registrados</span></li>';
+}
+
+// ==================== SIMULADOR ====================
+let simTimer;
+function programarSim() { clearTimeout(simTimer); simTimer = setTimeout(cargarSim, 180); }
+async function cargarSim() {
+  const pctV = +$("#sim-pct").value;
+  $("#sim-valor").textContent = (pctV > 0 ? "+" : "") + pctV + " %";
+  let ruta = `/api/simular?id=${$("#sim-corredor").value}&pct=${pctV}`;
+  if ($("#sim-usar-elas").checked) ruta += "&elasticidad=" + $("#sim-elas").value;
+  let d;
+  try { d = await api(ruta); $("#sim-error").innerHTML = ""; }
+  catch (err) { $("#sim-error").innerHTML = `<div class="error">${esc(err.message)}</div>`; return; }
+  const orden = ["pesimista", "central", "optimista"].filter(k => d.escenarios[k]);
+  $("#sim-escenarios").className = "grid mt " + (orden.length === 1 ? "g3" : "g3");
+  $("#sim-escenarios").innerHTML = orden.map(k => { const e = d.escenarios[k]; return `
+    <div class="panel escenario ${k}"><div class="titulo">Escenario ${k}</div>
+      <div class="grande">${pct(e.var_ingresos_pct)}</div><div style="color:var(--muted);font-size:12px">variación de ingresos</div>
+      <dl><dt>Elasticidad</dt><dd>${nf(e.elasticidad, 2)}</dd><dt>Viajeros</dt><dd>${nf(e.viajeros_M, 2)} M (${pct(e.var_viajeros_pct)})</dd>
+          <dt>Ingresos</dt><dd>${nf(e.ingresos_mercado_MEUR)} M€</dd><dt>Ocupación estimada</dt><dd>${nf(e.ocupacion_estimada_pct)} %</dd>
+          <dt>Riesgo de capacidad</dt><dd>${e.riesgo_capacidad ? '<span class="delta neg">Sí</span>' : "No"}</dd></dl></div>`; }).join("");
+  const b = d.base_2025, col = COLORES();
+  grafico("ch-sim", { type: "bar", data: { labels: ["Base 2025", ...orden], datasets: [{ data: [b.ingresos_mercado_MEUR, ...orden.map(k => d.escenarios[k].ingresos_mercado_MEUR)], backgroundColor: [css("--muted"), ...orden.map(k => k === "central" ? col[0] : col[0] + "88")], borderRadius: 4 }] },
+    options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: false } } } });
+  $("#sim-base").innerHTML = `<table><tbody><tr><td>Viajeros base 2025</td><td class="n">${nf(b.viajeros_M)} M</td></tr><tr><td>Ingreso medio base</td><td class="n">${nf(b.ingreso_medio_eur, 2)} €</td></tr><tr><td>Ingresos de mercado base</td><td class="n">${nf(b.ingresos_mercado_MEUR)} M€</td></tr><tr><td>Ocupación de referencia</td><td class="n">${nf(b.ocupacion_ref_pct, 0)} %</td></tr><tr><td>Origen de la elasticidad</td><td class="n">${esc(d.origen_elasticidad)}</td></tr></tbody></table>`;
+  $("#sim-supuestos").innerHTML = d.supuestos.map(s => `<li>${esc(s)}</li>`).join("");
+}
+$("#sim-pct").oninput = programarSim;
+$("#sim-corredor").onchange = cargarSim;
+$("#sim-elas").oninput = programarSim;
+$("#sim-usar-elas").onchange = () => { $("#sim-elas").disabled = !$("#sim-usar-elas").checked; cargarSim(); };
+
+// ==================== COMPETIDORES ====================
+let empresaSel = "";
+async function cargarComp() {
+  const d = await api("/api/competidores" + (empresaSel ? "?empresa=" + empresaSel : ""));
+  $("#filtro-empresa").innerHTML = ["", "Renfe", "Iryo", "Ouigo", "Sector"].map(e => `<button data-e="${e}" class="${e === empresaSel ? "activo" : ""}">${e || "Todas"}</button>`).join("");
+  document.querySelectorAll("#filtro-empresa button").forEach(b => b.onclick = () => { empresaSel = b.dataset.e; cargarComp(); });
+  const legible = s => s.replaceAll("_", " ").replace(/^./, c => c.toUpperCase()).replace(" AV ", " AV ").replace("OSP", "OSP");
+  $("#tabla-comp").innerHTML = `<table><thead><tr><th>Empresa</th><th>Año</th><th>Indicador</th><th class="n">Valor</th><th>Unidad</th><th>Fuente</th></tr></thead><tbody>
+    ${d.filas.map(f => `<tr><td><b>${esc(f.empresa)}</b></td><td>${esc(f.anio)}</td><td>${esc(legible(f.indicador))}</td><td class="n">${nf(f.valor, f.valor % 1 ? 1 : 0)}</td><td>${esc(f.unidad)}</td><td>${chip(f.fuente_id)}</td></tr>`).join("")}</tbody></table>`;
+}
+
+// ==================== DEMANDA ====================
+function tablaSnapshot(filas) {
+  return `<table><thead><tr><th>Periodo</th><th>Serie</th><th class="n">Viajeros (M)</th><th class="n">Var. interanual</th><th>Nota</th><th>Fuente</th></tr></thead><tbody>
+    ${filas.map(f => `<tr><td>${esc(f.periodo)}</td><td>${esc(f.serie)}</td><td class="n">${nf(f.viajeros_millones, 2)}</td><td class="n">${pct(f.var_interanual_pct)}</td><td>${esc(f.nota)}</td><td>${chip(f.fuente_id)}</td></tr>`).join("")}</tbody></table>`;
+}
+async function cargarDemanda(vivo = false) {
+  const btn = $("#btn-ine"); btn.disabled = vivo;
+  try {
+    const d = await api("/api/demanda" + (vivo ? "?vivo=1" : ""));
+    $("#demanda-aviso").innerHTML = d.error_en_vivo ? `<div class="aviso">No se pudo consultar el INE en vivo (${esc(d.error_en_vivo)}). Se muestran los datos guardados.</div>` : "";
+    if (d.modo === "en_vivo") {
+      const series = d.series.filter(s => s.datos.length);
+      const labels = [...new Set(series.flatMap(s => s.datos.map(x => x.periodo)))].sort();
+      const col = COLORES();
+      $("#demanda-graf").style.display = "";
+      $("#demanda-n").textContent = `${series.length} series · ${d.fuente}`;
+      grafico("ch-demanda", { type: "line", data: { labels, datasets: series.slice(0, 8).map((s, i) => ({ label: s.nombre.slice(0, 70), data: labels.map(l => s.datos.find(x => x.periodo === l)?.valor ?? null), borderColor: col[i % 5], backgroundColor: col[i % 5], tension: .3, spanGaps: true, borderDash: i >= 5 ? [5, 4] : [] })) },
+        options: { plugins: { legend: { position: "bottom", labels: { boxWidth: 10, font: { size: 11 } } } } } });
+      $("#tabla-demanda").innerHTML = `<table><thead><tr><th>Serie INE</th><th class="n">Último periodo</th><th class="n">Último valor</th></tr></thead><tbody>
+        ${series.map(s => { const u = s.datos.at(-1); return `<tr><td>${esc(s.nombre)}</td><td class="n">${esc(u.periodo)}</td><td class="n">${nf(u.valor, 0)}</td></tr>`; }).join("")}</tbody></table>`;
+    } else {
+      $("#demanda-graf").style.display = "none";
+      $("#tabla-demanda").innerHTML = tablaSnapshot(d.filas);
+    }
+  } catch (err) {
+    $("#demanda-aviso").innerHTML = `<div class="error">${esc(err.message)}</div>`;
+  } finally { btn.disabled = false; }
+}
+$("#btn-ine").onclick = () => cargarDemanda(true);
+
+// ==================== FUENTES / ESTADO ====================
+function pintarEstado(e) {
+  const filas = Object.entries(e.tablas);
+  const total = filas.reduce((s, [, t]) => s + (t.filas || 0), 0);
+  const destino = e.origen === "supabase" ? `Supabase · ${esc(e.host)}` : `Archivos CSV · ${esc(e.data_dir)}`;
+  $("#estado-pie").innerHTML = `<span class="punto ${e.ok ? "ok" : "bad"}"></span>${e.origen === "supabase" ? "Supabase" : "CSV locales"} · ${total} filas`;
+  $("#estado-datos").innerHTML = `<h3>Origen de los datos <small>${e.ok ? "conectado" : "con errores"}</small></h3>
+    <p style="margin:0 0 12px"><span class="punto ${e.ok ? "ok" : "bad"}"></span>${destino}</p>
+    <div class="tabla-scroll"><table><thead><tr>${filas.map(([n]) => `<th class="n">${esc(n.replaceAll("_", " "))}</th>`).join("")}</tr></thead>
+    <tbody><tr>${filas.map(([, t]) => `<td class="n">${t.ok ? t.filas : '<span class="delta neg">error</span>'}</td>`).join("")}</tr></tbody></table></div>`;
+}
+async function cargarFuentes() {
+  const [e, f] = await Promise.all([api("/api/estado"), api("/api/fuentes")]);
+  pintarEstado(e);
+  $("#lista-fuentes").innerHTML = f.filas.map(x => `<a class="panel fuente" href="${esc(x.url)}" target="_blank" rel="noopener">
+      <div class="org">${esc(x.organismo)} · ${esc(x.fecha_publicacion)} · <span class="chip">${esc(x.fuente_id)}</span></div>
+      <div class="tit">${esc(x.titulo)}</div><div class="url">${esc(x.url)}</div></a>`).join("");
+}
+$("#btn-recargar").onclick = async () => {
+  const b = $("#btn-recargar"); b.disabled = true;
+  try { pintarEstado(await api("/api/recargar")); Object.keys(cargadas).forEach(k => cargadas[k] = false); cargadas.fuentes = true; }
+  finally { b.disabled = false; }
+};
+
+const CARGAR = { resumen: cargarResumen, corredor: cargarCorredor, simulador: cargarSim, competidores: cargarComp, demanda: () => cargarDemanda(false), fuentes: cargarFuentes };
+
+// ==================== inicio ====================
+(async () => {
+  const opts = CORREDORES.map(c => `<option value="${c}">${c}</option>`).join("");
+  $("#sel-corredor").innerHTML = opts; $("#sim-corredor").innerHTML = opts;
+  $("#sel-corredor").onchange = cargarCorredor;
+  try {
+    const [e, f] = await Promise.all([api("/api/estado"), api("/api/fuentes")]);
+    f.filas.forEach(x => FUENTES[x.fuente_id] = x);
+    pintarEstado(e);
+    const nombres = await api("/api/resumen");
+    nombres.corredores.forEach(r => { [...document.querySelectorAll(`option[value="${r.corredor_id}"]`)].forEach(o => o.textContent = `${r.corredor_id} · ${r.nombre}`); });
+    cargadas.resumen = true;
+    await cargarResumen();
+    const [vista, param] = location.hash.slice(1).split("/");
+    if (param && CORREDORES.includes(param)) { $("#sel-corredor").value = param; $("#sim-corredor").value = param; }
+    if (CARGAR[vista] && vista !== "resumen") irA(vista);
+  } catch (err) {
+    $("#kpis-resumen").innerHTML = `<div class="error span2">No se pudieron cargar los datos: ${esc(err.message)}</div>`;
+    $("#estado-pie").innerHTML = `<span class="punto bad"></span>Sin conexión a los datos`;
+  }
+})();
+</script>
+</body>
+</html>

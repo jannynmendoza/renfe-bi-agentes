@@ -3,3 +3,5 @@ anthropic>=0.40
 python-dotenv>=1.0
 pytest>=8.0
 psycopg[binary]>=3.2
+pywebview>=5.0
+# Solo para generar el .exe del frontend: pip install pyinstaller

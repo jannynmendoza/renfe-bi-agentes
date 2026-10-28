@@ -10,5 +10,8 @@ __pycache__/
 *.pyc
 .pytest_cache/
 
+# Ejecutable generado (se regenera con frontend/build_exe.ps1) y su .env
+App/
+
 # Ajustes locales de editores / Claude Code
 .claude/settings.local.json

@@ -78,6 +78,12 @@ python agents/run_agentes.py --corredor SEV --pregunta "¿Bajamos un 10 % para r
 | `demanda_mensual` | Snapshot INE o **en vivo** (tabla INE 49359) con fallback |
 | `fuentes` | Resuelve `fuente_id` → URL |
 
+## Aplicación de escritorio (frontend)
+Interfaz para usuarios de negocio sobre los mismos datos y reglas que el servidor MCP: resumen del mercado, ficha por corredor con la acción recomendada, simulador de precios, competidores, demanda INE (guardada o en vivo) y fuentes.
+- **Ejecutable:** `App/RadarCompetitivoAV.exe` (en la carpeta del trabajo). Doble clic y se abre en su propia ventana. Lee de Supabase si junto al `.exe` hay un `.env` con `SUPABASE_DB_URL`; si no, usa los CSV que lleva incluidos.
+- **Desde el código:** `python frontend/app.py` (`--navegador` para abrirlo en el navegador, `--servidor` solo para levantar la API).
+- **Regenerar el .exe:** `powershell -ExecutionPolicy Bypass -File frontend\build_exe.ps1`
+
 ## Base de datos (Supabase)
 Los 10 datasets se publican en una base de datos PostgreSQL de [Supabase](https://supabase.com/dashboard/organizations) y el servidor MCP los lee de allí.
 1. En Supabase crea un proyecto y copia la cadena de *Connect → Session pooler*.
